@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "langnet"
+version = "0.1.0"
+description = ""
+authors = ["Orpheus <orpheus@computerdream.club>"]
+readme = "README.md"
+packages = [{include = "langnet"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+beautifulsoup4 = "^4.13.3"
+requests = "^2.32.3"
+gunicorn = "^23.0.0"
+flask = "^3.1.0"
+sh = "^2.2.1"
+html5lib = "^1.1"
+betacode = "^1.0"
+pygtrie = "^2.5.0"
+
+[tool.poe.tasks]
+serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
+dev.cmd = "flask --app langnet.wsgi:app run --debug"
+dev.envfile = "${POE_GIT_DIR}/.dev-envfile"
+edit = "hx"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
