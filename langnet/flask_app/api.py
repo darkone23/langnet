@@ -17,8 +17,9 @@ def q():
     search = request.args.get("s", "Ἀσίας")
     lang = request.args.get("l", DiogenesLanguages.GREEK)
     print("got query:", search, lang)
+    # print(request.data)
 
     wiring = get_wiring()
     result = wiring.scraper.parse_word(search, lang)
-    print(result)
+    # print(result)
     return jsonify(result)

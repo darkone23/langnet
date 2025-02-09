@@ -101,14 +101,19 @@ class DiogenesScraper:
     def handle_morphology(self, soup: BeautifulSoup):
         morphs = []
         maybe_morph_els = []  # using a p for list of 1
+        warning = None
         for tag in soup.find_all("li"):
             maybe_morph_els.append(tag)
         for tag in soup.find_all("p"):
-            maybe_morph_els.append(tag)
+            if len(maybe_morph_els) == 0:
+                maybe_morph_els.append(tag)
+            else:
+                warning = tag.get_text()
+                
         for tag in maybe_morph_els:
             perseus_morph = tag.get_text()
             parts = perseus_morph.split(":")
-            assert len(parts) == 2, "Perseus morphology should split stem from tags"
+            assert len(parts) == 2, f"Perseus morphology should split stem from tags: [{parts}]"
             [stems, tag_parts] = parts
 
             cleaned_defs = []
@@ -119,11 +124,14 @@ class DiogenesScraper:
                 if cleaned_def:
                     cleaned_defs.append(cleaned_def)
             for perseus_stem in stem_part.split(","):
-                cleaned_stems.append(re.sub(r"\d+", "", stem_part).strip())
+                cleaned_stems.append(re.sub(r"\d+", "", perseus_stem).strip())
 
             cleaned_tags = []
-            for t in tag_parts.split():
-                cleaned_tags.append(re.sub(r"[()]+", "", t))
+            tag_parts = re.sub(r"[()]+", "", tag_parts)
+            for t in tag_parts.replace('/', ' ').split():
+                pos = t.strip()
+                if not pos in cleaned_tags:
+                    cleaned_tags.append(pos)
 
             morph = dict(
                 stem=cleaned_stems,
@@ -135,7 +143,15 @@ class DiogenesScraper:
 
             morphs.append(morph)
 
-        return morphs
+        morph_dict = dict(
+            morphs=morphs
+        )
+
+        if warning:
+            _nothing, warning_txt = self.extract_parentheses_text(warning)
+            morph_dict["warning"] = warning_txt
+
+        return morph_dict
 
     def handle_references(self, soup):
         references = dict()
@@ -198,8 +214,9 @@ class DiogenesScraper:
                 initial_text = b.get_text().strip().rstrip(",").rstrip(":")
                 if len(initial_text) < 4:
                     print(
-                        "Throwing away what I think is a layout header:", initial_text
+                        "Removing potential layout header:", initial_text
                     )
+                    block["heading"] = initial_text
                     b.decompose()
                 break
             for b in soup.select("b"):
@@ -211,13 +228,13 @@ class DiogenesScraper:
                 other_senses = set(senses) - set([sense])
                 for other_sense in other_senses:
                     if sense.lower() in other_sense.lower():
-                        print("removing what I belive is a duplicate sense:", sense)
+                        print("Removing potential duplicate sense:", sense)
                         senses.remove(sense)
                         break
             senses_cleaned = []
             for sense in senses:
                 if sense not in senses_cleaned:
-                    # TODO: can skip over erroneous words like 'de, ex, ut, ab, .init.'
+                    # TODO: can skip over erroneous words like 'de, ex, ut, ab, .init.' 'Comp.'
                     # see e.g. quaero latin for an interesting hierarchy
                     senses_cleaned.append(sense)
             if len(senses) > 0:
@@ -336,7 +353,7 @@ class DiogenesScraper:
             for doc in documents:
                 soup = BeautifulSoup(doc, "html5lib")
                 chunk = self.get_next_chunk(result, soup)
-                print("working on a document:", chunk["chunk_type"])
+                # print("working on a document:", chunk["chunk_type"])
                 self.process_chunk(result, chunk)
         else:
             print("no soup for you", response.status_code, response.text)
