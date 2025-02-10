@@ -37,3 +37,11 @@ or greek terms:
 curl --data-urlencode 's=οὐσία' --data-urlencode 'l=grk' --get 'http://localhost:5000/api/q' | jq .chunks[0].morphology.morphs
 ```
 
+## other projects:
+
+- lute-v3 / lwt
+- lingq
+- scaife/perseus
+- wisdomlib
+- archive.org
+

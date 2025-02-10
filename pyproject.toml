@@ -21,7 +21,6 @@ pygtrie = "^2.5.0"
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
 dev.cmd = "flask --app langnet.wsgi:app run --debug"
 dev.envfile = "${POE_GIT_DIR}/.dev-envfile"
-edit = "hx"
 
 [build-system]
 requires = ["poetry-core"]
