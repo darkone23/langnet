@@ -23,9 +23,14 @@
   ];
 </script>
 
-<div class="flex gap-2">
+
+<div class="flex gap-2 px-4 mt-2">
   <a use:route href="/">Home</a>
   <a use:route href="/about">About</a>
 </div>
 
+<main class="flex flex-wrap items-center justify-between w-full px-4">
+
 <Router base="/" {routes} />
+
+</main>

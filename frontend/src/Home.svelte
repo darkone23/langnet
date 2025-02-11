@@ -3,7 +3,7 @@
 </script>
 
 <main>
-  <h1 class="text-3xl font-bold underline">
+  <h1 class="text-3xl font-bold underline mb-2">
     ave mundus
   </h1>
   <div>

@@ -21,7 +21,7 @@
     }
   }).then(function (response) {
       // handle success
-      console.log("response", response);
+      // console.log("response", response);
       result = response.data;
       status = "OK";
     })

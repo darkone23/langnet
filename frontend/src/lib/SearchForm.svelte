@@ -30,7 +30,11 @@
     </div>
 
     <div>
-      <button type="submit">Submit</button>
+        <button type="submit">
+          <a class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ">
+            search
+          </a>
+        </button>
     </div>
   </form>
 </div>
