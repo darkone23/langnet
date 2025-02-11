@@ -45,8 +45,8 @@
   # https://devenv.sh/tasks/
   tasks = {
     "langnet:setup".exec = "pipx install gunicorn poethepoet flask && ${pkgs.poetry}/bin/poetry install";
-    "langnet:dev".exec = "devenv shell poe -- dev";
-    "langnet:serve".exec = "devenv shell poe -- serve";
+    "langnet:dev".exec = "devenv shell $HOME/.local/bin/poe -- dev";
+    "langnet:serve".exec = "devenv shell $HOME/.local/bin/poe -- serve";
     "langnet:jssetup".exec = ''devenv shell npm -- install --prefix=frontend'';
     "langnet:jsdev".exec = ''devenv shell npm -- run dev --prefix=frontend'';
     "langnet:jsbuild".exec = ''
