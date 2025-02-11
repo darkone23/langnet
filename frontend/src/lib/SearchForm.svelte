@@ -1,36 +1,28 @@
 <script lang="ts">
-  // let count: number = $state(0)
-  // const increment = () => {
-  //   count += 1
-  // }
-  // import { navigate } from "svelte-routing";
-  import axios from 'axios';
-  console.log("you loaded my javascript!")
+  import { goto } from "@mateothegreat/svelte5-router";
+  console.log("you loaded my javascript!", import.meta.env.MODE);
+  
+
+  console.log("nice goto", goto)
 
   function handleFormSubmit(event) {
     const queryEndpoint = "";
     event.preventDefault();
     event.stopImmediatePropagation();
-    console.log("nice event yo", event);
-    axios.get(event.target.action)
-      .then(function (response) {
-        // handle success
-        console.log("response", response);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log("error", error);
-      })
-      .finally(function () {
-        // always executed
-      });
-    
+    console.log("nice js event", event);
+
+    const formData = Object.fromEntries(new FormData(event.target));
+
+    goto("/q", {
+      language: formData["l"],
+      search: formData["s"]
+    })    
   }
   
 </script>
 
 <div class="search-controls">
-  <form action="http://localhost:5000/api/q" method="get" on:submit={handleFormSubmit}>
+  <form action={actionTarget} method="get" on:submit={handleFormSubmit}>
     <div>
       <label for="search-input">Enter your term: </label>
       <input id="search-input" type="text" name="s" required />

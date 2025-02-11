@@ -3,6 +3,7 @@
   import { route, Router } from "@mateothegreat/svelte5-router";
 
   import Home from './Home.svelte';
+  import SearchResults from './SearchResults.svelte';
   import About from './About.svelte';
   // import Dummy from './Dummy.svelte';
 
@@ -10,6 +11,10 @@
     {
       path: "/",
       component: Home
+    },
+    {
+      path: "q",
+      component: SearchResults,
     },
     {
       path: "about",

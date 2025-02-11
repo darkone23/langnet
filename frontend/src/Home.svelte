@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Search from './lib/Search.svelte'
+  import SearchForm from './lib/SearchForm.svelte'
 </script>
 
 <main>
@@ -7,6 +7,6 @@
     ave mundus
   </h1>
   <div>
-    <Search />
+    <SearchForm />
   </div>
 </main>
