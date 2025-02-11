@@ -40,16 +40,15 @@
   enterShell = ''
     hello
     git --version
-    pipx install gunicorn poethepoet flask
   '';
 
   # https://devenv.sh/tasks/
   tasks = {
-    "langnet:setup".exec = "${pkgs.poetry}/bin/poetry install";
+    "langnet:setup".exec = "pipx install gunicorn poethepoet flask && ${pkgs.poetry}/bin/poetry install";
     "langnet:dev".exec = "poe dev";
     "langnet:serve".exec = "poe serve";
     "langnet:jsdev".exec = "bash -c 'cd frontend && ${pkgs.nodejs}/bin/npm run dev'";
-    # "devenv:enterShell".after = [ "langnet:setup" ];
+    "devenv:enterShell".after = [ "langnet:setup" ];
   };
 
   # https://devenv.sh/tests/
