@@ -6,6 +6,8 @@
       window.location.search
     )
   )
+
+  let status = $state("LOADING")
   let result = $state({})
 
   let actionTarget = "/api/q";
@@ -20,20 +22,20 @@
   }).then(function (response) {
       // handle success
       console.log("response", response);
-      result = response.data
+      result = response.data;
+      status = "OK";
     })
     .catch(function (error) {
       // handle error
-      console.log("error", error);
+      status = `${error.code}`;
+      console.error(error.message, error)
+      // console.log("error", error);
     })
-    .finally(function () {
-      // always executed
-    });
 </script>
 
 <div>
   <p>
-  {language}@{search}
+  {language}@{search}::{status}
   </p>
   <hr />
   <pre>{JSON.stringify(result, 0, 2)}

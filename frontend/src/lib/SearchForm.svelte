@@ -1,15 +1,8 @@
 <script lang="ts">
-  import { goto } from "@mateothegreat/svelte5-router";
-  console.log("you loaded my javascript!", import.meta.env.MODE);
-  
-
-  console.log("nice goto", goto)
-
+  import { goto } from "@mateothegreat/svelte5-router";  
   function handleFormSubmit(event) {
-    const queryEndpoint = "";
     event.preventDefault();
     event.stopImmediatePropagation();
-    console.log("nice js event", event);
 
     const formData = Object.fromEntries(new FormData(event.target));
 
@@ -22,7 +15,7 @@
 </script>
 
 <div class="search-controls">
-  <form action={actionTarget} method="get" on:submit={handleFormSubmit}>
+  <form method="get" on:submit={handleFormSubmit}>
     <div>
       <label for="search-input">Enter your term: </label>
       <input id="search-input" type="text" name="s" required />
