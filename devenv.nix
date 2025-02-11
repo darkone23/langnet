@@ -10,6 +10,7 @@
     pkgs.black
     pkgs.poetry
     pkgs.pipx
+    pkgs.nodejs
     pkgs.python3Packages.python-lsp-server
     pkgs.nodePackages.vscode-langservers-extracted
     pkgs.nil
@@ -43,10 +44,13 @@
   '';
 
   # https://devenv.sh/tasks/
-  # tasks = {
-  #   "myproj:setup".exec = "mytool build";
-  #   "devenv:enterShell".after = [ "myproj:setup" ];
-  # };
+  tasks = {
+    "langnet:setup".exec = "${pkgs.poetry}/bin/poetry install";
+    "langnet:dev".exec = "poe dev";
+    "langnet:serve".exec = "poe serve";
+    "langnet:jsdev".exec = "bash -c 'cd frontend && ${pkgs.nodejs}/bin/npm run dev'";
+    # "devenv:enterShell".after = [ "langnet:setup" ];
+  };
 
   # https://devenv.sh/tests/
   enterTest = ''
