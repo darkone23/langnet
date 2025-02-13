@@ -16,6 +16,7 @@ start: noun_line
 	  | interj_line
 	  | num_line
 	  | suffix_line
+	  | prefix_line
 	  | supine_line
 
 noun_line: term "N" declension variant case number gender [notes]
@@ -31,6 +32,7 @@ conjunction_line: term "CONJ" [notes]
 tack_line: term "TACKON" [notes]
 interj_line: term "INTERJ" [notes]
 suffix_line: term "SUFFIX" [notes]
+prefix_line: term "PREFIX" [notes]
 pack_line: term "PACK" [notes]
 
 tense: word
@@ -54,6 +56,7 @@ notes: /[A-Za-z0-9,\/()\[\]~=>.:\-\+'"!_\? ]+/
 %ignore WS
 """
 
+
 class FactsTransformer(Transformer):
 
     def __named_token(self, args, name):
@@ -61,7 +64,7 @@ class FactsTransformer(Transformer):
         if type(item) == Tree:
             item = item.children[0]
         token = f"{item}".strip()
-        return {name: token}        
+        return {name: token}
 
     def conjugation(self, args):
         return self.__named_token(args, "conjugation")
@@ -71,7 +74,7 @@ class FactsTransformer(Transformer):
 
     def variant(self, args):
         return self.__named_token(args, "variant")
-    
+
     def notes(self, args):
         return self.__named_token(args, "notes")
 
@@ -83,43 +86,37 @@ class FactsTransformer(Transformer):
 
     def gender(self, args):
         return self.__named_token(args, "gender")
-    
+
     def case(self, args):
         return self.__named_token(args, "case")
-    
+
     def number(self, args):
         return self.__named_token(args, "number")
-    
+
     def tense(self, args):
         return self.__named_token(args, "tense")
-    
+
     def voice(self, args):
         return self.__named_token(args, "voice")
-    
+
     def mood(self, args):
         return self.__named_token(args, "mood")
-    
+
     def term(self, args):
         term = f"{args[0]}"
         parts = term.split(".")
         if len(parts) > 1:
             return dict(
-                term=term,
-                stem=parts[0],
-                ending='.'.join(parts[1:])
+                term=term, term_analysis=dict(stem=parts[0], ending=".".join(parts[1:]))
             )
         else:
-            return dict(
-              term=term  
-            )
-    
+            return dict(term=term)
+
     def start(self, args):
         return args[0]
 
     def __assemble_args(self, args, part_of_speech):
-        obj = dict(
-            part_of_speech=part_of_speech
-        )
+        obj = dict(part_of_speech=part_of_speech)
         for arg in args:
             if arg is not None:
                 obj.update(arg)
@@ -131,43 +128,47 @@ class FactsTransformer(Transformer):
 
     def verb_line(self, args):
         return self.__assemble_args(args, "verb")
-    
+
     def adverb_line(self, args):
         return self.__assemble_args(args, "adverb")
-    
+
     def pronoun_line(self, args):
         return self.__assemble_args(args, "pronoun")
-    
+
     def adjective_line(self, args):
         return self.__assemble_args(args, "adjective")
-    
+
     def conjunction_line(self, args):
         return self.__assemble_args(args, "conjunction")
-    
+
     def verb_participle_line(self, args):
         return self.__assemble_args(args, "verb-participle")
 
     def pack_line(self, args):
         return self.__assemble_args(args, "pack")
-    
+
     def preposition_line(self, args):
         return self.__assemble_args(args, "preposition")
-    
+
     def tack_line(self, args):
         return self.__assemble_args(args, "tackon")
-    
+
     def interj_line(self, args):
         return self.__assemble_args(args, "interjection")
-    
+
     def num_line(self, args):
         return self.__assemble_args(args, "numerator")
-    
+
     def suffix_line(self, args):
         return self.__assemble_args(args, "suffix")
-    
+
+    def prefix_line(self, args):
+        return self.__assemble_args(args, "prefix")
+
     def supine_line(self, args):
         return self.__assemble_args(args, "supine")
-    
+
+
 class FactsReducer:
     parser = Lark(TERM_FACTS_GRAMMAR)
     xformer = FactsTransformer()
@@ -177,6 +178,7 @@ class FactsReducer:
         tree = FactsReducer.parser.parse(line)
         result = FactsReducer.xformer.transform(tree)
         return result
+
 
 if __name__ == "__main__":
     input_data = sys.stdin.read().strip()

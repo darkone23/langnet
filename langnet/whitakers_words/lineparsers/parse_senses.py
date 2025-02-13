@@ -19,18 +19,19 @@ class SenseTransformer(Transformer):
 
     def start(self, args):
         return args[0]
-    
+
     def extract_parentheses_text(self, text):
-        text = text.replace("[", "(").replace("]", ")")
+        text = (
+            text.replace("(", "{").replace(")", "}").replace("[", "(").replace("]", ")")
+        )
         extracted = " ".join(
             re.findall(r"\((.*?)\)", text, re.DOTALL)
         )  # Extract text inside parentheses, including newlines
         cleaned_text = re.sub(
             r"\s*\(.*?\)\s*", " ", text, flags=re.DOTALL
         ).strip()  # Remove parentheses and enclosed text
+        cleaned_text = cleaned_text.replace("{", "(").replace("}", ")")
         return (cleaned_text, extracted.strip())
-
-        return cleaned_text, extracted
 
     def sense(self, tokens):
         words = []
@@ -54,7 +55,8 @@ class SenseTransformer(Transformer):
         obj = dict(senses=senses, notes=notes)
         if len(notes) == 0:
             del obj["notes"]
-        return obj 
+        return obj
+
 
 class SensesReducer:
     parser = Lark(SENSES_GRAMMAR)
@@ -65,6 +67,7 @@ class SensesReducer:
         tree = SensesReducer.parser.parse(line)
         result = SensesReducer.xformer.transform(tree)
         return result
+
 
 if __name__ == "__main__":
     input_data = sys.stdin.read().strip()

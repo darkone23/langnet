@@ -23,9 +23,7 @@ def q():
     wiring = get_wiring()
     result = wiring.scraper.parse_word(search, lang)
 
-    response = dict(
-        diogenes=result
-    )
+    response = dict(diogenes=result)
 
     if lang == DiogenesLanguages.LATIN:
         result["whitakers"] = WhitakersWords.words([search])

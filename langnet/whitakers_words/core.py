@@ -6,16 +6,15 @@ import re
 
 from rich.pretty import pprint
 
-from .lineparsers import (
-    FactsReducer, SensesReducer, CodesReducer
-)
+from .lineparsers import FactsReducer, SensesReducer, CodesReducer
+
 
 class WhitakersWordsChunker:
 
     # https://sourceforge.net/p/wwwords/wiki/wordsdoc.htm/
 
     ww = Command(Path.home() / ".local/bin/whitakers-words")
-    term_pattern = r"^[a-z]+(?:\.[a-z]+)*\s+[A-Z]+"
+    term_pattern = r"^[a-z.]+(?:\.[a-z]+)*\s+[A-Z]+"
 
     def __init__(self, input: list[str]):
         # we might be in a special input mode
@@ -97,6 +96,7 @@ class WhitakersWordsChunker:
             self.analyze_chunk(chunk)
         return word_chunks
 
+
 class WhitakersWords:
 
     @staticmethod
@@ -115,24 +115,23 @@ class WhitakersWords:
                         if type(v) == list and type(_v) == list:
                             dest[k] = v + _v
                         elif type(v) == list:
-                            dest[k] = v + [ f"{_v}".strip() ]
+                            dest[k] = v + [f"{_v}".strip()]
                         elif type(_v) == list:
-                            dest[k] = _v + [ f"{v}".strip() ]
+                            dest[k] = _v + [f"{v}".strip()]
                         else:
                             print("OH NO A COLLISION!", k, v, _v, v == _v)
                 else:
                     dest[k] = v
-        
+
         for word_chunk in chunks:
             unknown = []
             terms = []
-            word = dict(
-                terms=terms,
-                unknown=unknown
-            )
+            lines = []
+            word = dict(terms=terms, raw_lines=lines, unknown=unknown)
             for i in range(word_chunk["size"]):
                 (txt, line_type) = (word_chunk["txts"][i], word_chunk["types"][i])
                 # print(line_type, txt)
+                lines.append(txt)
                 if line_type == "sense":
                     data = SensesReducer.reduce(txt)
                     smart_merge(data, word)
@@ -141,16 +140,18 @@ class WhitakersWords:
                     terms.append(data)
                 elif line_type == "term-code":
                     data = CodesReducer.reduce(txt)
-                    smart_merge(data, word)
+                    smart_merge(dict(codeline=data), word)
                 elif line_type == "unknown":
                     unknown.append(txt)
                 else:
                     assert False, f"Unexpected line type! [{line_type}]"
             if len(unknown) == 0:
                 del word["unknown"]
-            wordlist.append(word)
+            if len(lines):
+                wordlist.append(word)
         return wordlist
-        
+
+
 def main():
 
     latin_words = [

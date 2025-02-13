@@ -212,7 +212,13 @@ class DiogenesScraper:
             senses = []
             for b in soup.select("b"):
                 initial_text = b.get_text().strip().rstrip(",").rstrip(":")
-                if len(initial_text) < 4:
+                chars = set()
+                dot = set(["."])
+                for char in initial_text:
+                    chars.add(char)
+                    if len(chars - dot) > 4:
+                        break
+                if initial_text.endswith(".") and len(chars - dot) <= 4:
                     print("Removing potential layout header:", initial_text)
                     block["heading"] = initial_text
                     b.decompose()

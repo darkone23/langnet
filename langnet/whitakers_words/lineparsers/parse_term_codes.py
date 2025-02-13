@@ -6,17 +6,17 @@ from lark.visitors import Discard
 TERM_CODES_GRAMMAR = """
 start: simple_code_line | full_code_line | basic_code_line 
 
-simple_code_line: term_info pos code_chunk [notes]
-full_code_line: term_info pos [person] [pos_info] code_chunk [notes]
+simple_code_line: term_info pos_code code_chunk [notes]
+full_code_line: term_info pos_code [declension] [pos_form] code_chunk [notes]
 basic_code_line: code_chunk [notes]
 
-pos_info: /[A-Z]{1,7}/
-pos: /[A-Z]{1,7}/
+pos_form: /[A-Z]{1,7}/
+pos_code: /[A-Z]{1,7}/
 term_txt: /[A-Za-z.]{1}[a-z., ()-\/]+/
 term_info: proper_names | term_txt
 proper_names: name ("," name)*
 name: /[A-Z][a-z]+/
-person: "(" /[0-9]{1}[sthnrd]{2}/ ")"
+declension: "(" /[0-9]{1}[sthnrd]{2}/ ")"
 age: char
 area: char
 geo: char
@@ -30,6 +30,7 @@ notes: /[A-Za-z0-9,\/()\[\]~=>.:\-\+'"!_\? ]+/
 %import common.WS -> WS
 %ignore WS
 """
+
 
 class CodesTransformer(Transformer):
 
@@ -50,7 +51,7 @@ class CodesTransformer(Transformer):
     def notes(self, args):
         for x in args:
             # print("notes", x)
-            return dict(notes=f"{x}".strip())
+            return dict(notes=f"{x}".strip().split())
         return args
 
     def proper_names(self, args):
@@ -60,17 +61,17 @@ class CodesTransformer(Transformer):
                 names.append(f"{thing}")
         return dict(names=names)
 
-    def pos(self, args):
+    def pos_code(self, args):
         for x in args:
-            return dict(pos=f"{x}")
-        
-    def person(self, args):
-        for x in args:
-            return dict(person=f"{x}")
+            return dict(pos_code=f"{x}")
 
-    def pos_info(self, args):
+    def declension(self, args):
         for x in args:
-            return dict(pos_info=f"{x}")
+            return dict(declension=f"{x}")
+
+    def pos_form(self, args):
+        for x in args:
+            return dict(pos_form=f"{x}")
 
     def term_info(self, args):
         # print("info", type(args), args)
@@ -88,7 +89,7 @@ class CodesTransformer(Transformer):
                 if leaf == "X":
                     return Discard
                 return f"{leaf}"
-    
+
     def age(self, args):
         code = self.handle_code(args)
         if code is not Discard:
@@ -102,7 +103,7 @@ class CodesTransformer(Transformer):
             return dict(area=code)
         else:
             return Discard
-    
+
     def geo(self, args):
         code = self.handle_code(args)
         if code is not Discard:
@@ -151,6 +152,7 @@ class CodesTransformer(Transformer):
         # print("basic", args)
         return self.flatten(args)
 
+
 class CodesReducer:
     parser = Lark(TERM_CODES_GRAMMAR)
     xformer = CodesTransformer()
@@ -160,6 +162,7 @@ class CodesReducer:
         tree = CodesReducer.parser.parse(line)
         result = CodesReducer.xformer.transform(tree)
         return result
+
 
 if __name__ == "__main__":
     input_data = sys.stdin.read().strip()
