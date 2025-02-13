@@ -16,6 +16,8 @@ sh = "^2.2.1"
 html5lib = "^1.1"
 betacode = "^1.0"
 pygtrie = "^2.5.0"
+lark = "^1.2.2"
+rich = "^13.9.4"
 
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"

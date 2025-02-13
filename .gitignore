@@ -1,4 +1,5 @@
 # Devenv
+.venv*
 .devenv*
 devenv.local.nix
 

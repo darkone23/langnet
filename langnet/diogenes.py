@@ -109,11 +109,13 @@ class DiogenesScraper:
                 maybe_morph_els.append(tag)
             else:
                 warning = tag.get_text()
-                
+
         for tag in maybe_morph_els:
             perseus_morph = tag.get_text()
             parts = perseus_morph.split(":")
-            assert len(parts) == 2, f"Perseus morphology should split stem from tags: [{parts}]"
+            assert (
+                len(parts) == 2
+            ), f"Perseus morphology should split stem from tags: [{parts}]"
             [stems, tag_parts] = parts
 
             cleaned_defs = []
@@ -128,7 +130,7 @@ class DiogenesScraper:
 
             cleaned_tags = []
             tag_parts = re.sub(r"[()]+", "", tag_parts)
-            for t in tag_parts.replace('/', ' ').split():
+            for t in tag_parts.replace("/", " ").split():
                 pos = t.strip()
                 if not pos in cleaned_tags:
                     cleaned_tags.append(pos)
@@ -143,9 +145,7 @@ class DiogenesScraper:
 
             morphs.append(morph)
 
-        morph_dict = dict(
-            morphs=morphs
-        )
+        morph_dict = dict(morphs=morphs)
 
         if warning:
             _nothing, warning_txt = self.extract_parentheses_text(warning)
@@ -213,9 +213,7 @@ class DiogenesScraper:
             for b in soup.select("b"):
                 initial_text = b.get_text().strip().rstrip(",").rstrip(":")
                 if len(initial_text) < 4:
-                    print(
-                        "Removing potential layout header:", initial_text
-                    )
+                    print("Removing potential layout header:", initial_text)
                     block["heading"] = initial_text
                     b.decompose()
                 break

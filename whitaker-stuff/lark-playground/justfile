@@ -1,0 +1,14 @@
+all:
+    just term_facts
+    just term_codes
+    just senses
+
+term_facts:
+    cat test-data/term-facts.txt | python3 parse_term_facts.py
+
+term_codes:
+    cat test-data/term-codes.txt | python3 parse_term_codes.py
+
+senses:
+    cat test-data/senses.txt | python3 parse_senses.py
+
