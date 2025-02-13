@@ -16,6 +16,10 @@ sense: /[A-Za-z0-9,\/()\[\]~=>.:\-\+'"!_\? ]+/
 
 
 class SenseTransformer(Transformer):
+
+    def start(self, args):
+        return args[0]
+    
     def extract_parentheses_text(self, text):
         text = text.replace("[", "(").replace("]", ")")
         extracted = " ".join(
@@ -47,8 +51,20 @@ class SenseTransformer(Transformer):
                     senses.append(s)
                 if n:
                     notes.append(n)
-        return dict(senses=senses, notes=notes)
+        obj = dict(senses=senses, notes=notes)
+        if len(notes) == 0:
+            del obj["notes"]
+        return obj 
 
+class SensesReducer:
+    parser = Lark(SENSES_GRAMMAR)
+    xformer = SenseTransformer()
+
+    @staticmethod
+    def reduce(line):
+        tree = SensesReducer.parser.parse(line)
+        result = SensesReducer.xformer.transform(tree)
+        return result
 
 if __name__ == "__main__":
     input_data = sys.stdin.read().strip()
@@ -57,13 +73,11 @@ if __name__ == "__main__":
         print("⚠️ No input data received! Please check your input file.")
         sys.exit(1)
 
-    parser = Lark(SENSES_GRAMMAR)
-    xformer = SenseTransformer()
+    from rich.pretty import pprint
+
     for line in input_data.splitlines():
         # print("Looking at line:")
-        # print(line)
-        parsed = parser.parse(line)
-        # from rich.pretty import pprint
-        # print(parsed.pretty())
-        result = xformer.transform(parsed)
-        print(result.pretty())
+        print(line)
+        result = SensesReducer.reduce(line)
+        pprint(result)
+        # print(result.pretty())

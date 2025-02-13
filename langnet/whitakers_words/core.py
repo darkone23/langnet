@@ -4,10 +4,15 @@ from sh import Command
 from pathlib import Path
 import re
 
-# from rich.pretty import pprint
+from rich.pretty import pprint
 
+from .lineparsers import (
+    FactsReducer, SensesReducer, CodesReducer
+)
 
-class WhitakersWords:
+class WhitakersWordsChunker:
+
+    # https://sourceforge.net/p/wwwords/wiki/wordsdoc.htm/
 
     ww = Command(Path.home() / ".local/bin/whitakers-words")
     term_pattern = r"^[a-z]+(?:\.[a-z]+)*\s+[A-Z]+"
@@ -18,7 +23,7 @@ class WhitakersWords:
         self.input = input
         self.result = self.ww(*input)
 
-    def inspect_line(self, line):
+    def classify_line(self, line):
         line_type = None
         if ";" in line:
             line_type = "sense"
@@ -63,7 +68,7 @@ class WhitakersWords:
             current["lines"].append(line_info)
             return current
 
-    def analyze_entry(self, entry: dict):
+    def analyze_chunk(self, entry: dict):
         entry["txts"] = txts = []
         entry["types"] = types = []
         for line in entry["lines"]:
@@ -77,22 +82,75 @@ class WhitakersWords:
         entry["size"] = len(txts)
         del entry["lines"]
 
-    def get_terms(self):
-        words = []
+    def get_word_chunks(self):
+        word_chunks = []
         current_word = None
         last_line = None
         for line in self.result.splitlines():
-            line_info = self.inspect_line(line)
+            line_info = self.classify_line(line)
             next_word = self.get_next_word(current_word, last_line, line_info)
             last_line = line_info
             if next_word is not current_word:
                 current_word = next_word
-                words.append(current_word)
-        for word in words:
-            self.analyze_entry(word)
-        return words
+                word_chunks.append(current_word)
+        for chunk in word_chunks:
+            self.analyze_chunk(chunk)
+        return word_chunks
 
+class WhitakersWords:
 
+    @staticmethod
+    def words(search: list[str]):
+        words_chunker = WhitakersWordsChunker(search)
+        chunks = words_chunker.get_word_chunks()
+        wordlist = []
+
+        def smart_merge(src: dict, dest: dict):
+            for k, v in src.items():
+                if k in dest:
+                    _v = dest[k]
+                    if v == _v:
+                        pass
+                    else:
+                        if type(v) == list and type(_v) == list:
+                            dest[k] = v + _v
+                        elif type(v) == list:
+                            dest[k] = v + [ f"{_v}".strip() ]
+                        elif type(_v) == list:
+                            dest[k] = _v + [ f"{v}".strip() ]
+                        else:
+                            print("OH NO A COLLISION!", k, v, _v, v == _v)
+                else:
+                    dest[k] = v
+        
+        for word_chunk in chunks:
+            unknown = []
+            terms = []
+            word = dict(
+                terms=terms,
+                unknown=unknown
+            )
+            for i in range(word_chunk["size"]):
+                (txt, line_type) = (word_chunk["txts"][i], word_chunk["types"][i])
+                # print(line_type, txt)
+                if line_type == "sense":
+                    data = SensesReducer.reduce(txt)
+                    smart_merge(data, word)
+                elif line_type == "term-facts":
+                    data = FactsReducer.reduce(txt)
+                    terms.append(data)
+                elif line_type == "term-code":
+                    data = CodesReducer.reduce(txt)
+                    smart_merge(data, word)
+                elif line_type == "unknown":
+                    unknown.append(txt)
+                else:
+                    assert False, f"Unexpected line type! [{line_type}]"
+            if len(unknown) == 0:
+                del word["unknown"]
+            wordlist.append(word)
+        return wordlist
+        
 def main():
 
     latin_words = [
@@ -473,28 +531,15 @@ def main():
         "attat",
         "heus",
         "st",
-        "horribile dictu",
+        "horribile",
+        "dictu",
         "ecce",
     ]
 
-    # latin_words = [ "tristis" ]
-
-    for xs in latin_words:
-
-        words = WhitakersWords([xs])
-        terms = words.get_terms()
-        for term in terms:
-            pass
-            # pprint(term)
-            # print(term["line_type"], term["line_txt"][:5])
-
-        for term in terms:
-            print()
-            for i in range(term["size"]):
-                (txt, line_type) = (term["txts"][i], term["types"][i])
-                print(line_type, txt)
-                # if line_type == "term-facts":
-                #     print(txt)
+    print("calculating words...")
+    words = WhitakersWords.words(latin_words)
+    for word in words:
+        pprint(word)
 
 
 if __name__ == "__main__":
