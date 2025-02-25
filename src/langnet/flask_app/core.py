@@ -5,7 +5,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .config import FlaskAppConfig
 
-from langnet.diogenes import DiogenesScraper
+from langnet.diogenes.core import DiogenesScraper
 
 
 class FlaskAppWiring:

@@ -1,8 +1,8 @@
-from flask import Flask, Blueprint
+from flask import Blueprint
 from flask import request, jsonify
 
-from langnet.flask_app import get_wiring
-from langnet.diogenes import DiogenesLanguages
+from langnet.flask_app.core import get_wiring
+from langnet.diogenes.core import DiogenesLanguages
 from langnet.whitakers_words.core import WhitakersWords
 
 app = Blueprint("api", __name__)

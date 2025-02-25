@@ -1,4 +1,4 @@
-import datomic_py
+import datomic_py # todo: requiring datomic crosslang tools
 import sys
 
 
@@ -23,7 +23,7 @@ def main():
          [?geid :db/ident ?gender]] 
     """,
         db,
-        "Jimi Hendrix",
+        "Jimi Hendrix", # a more complicated query might take a list of params as input...
     )
 
     for result in results:

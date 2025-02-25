@@ -1,5 +1,4 @@
 import sys
-import json
 from lark import Lark, Transformer
 from lark.visitors import Discard
 

@@ -2,23 +2,39 @@
 
 {
   # https://devenv.sh/basics/
+  env.LD_LIBRARY_PATH= "${pkgs.stdenv.cc.cc.lib}/lib/:${pkgs.zlib}/lib";
   env.GREET = "devenv";
-
+  env.TMP = "/tmp";
+  env.TMPDIR = "/tmp";
+  
   # https://devenv.sh/packages/
   packages = [ 
     pkgs.git
-    pkgs.black
-    pkgs.poetry
-    pkgs.pipx
     pkgs.nodejs
+
+    # useful language servers
     pkgs.python3Packages.python-lsp-server
     pkgs.nodePackages.vscode-langservers-extracted
     pkgs.nil
+
+    # some python utilities
+    # (pkgs.black.override { python3 = pkgs.python311; })  
+    pkgs.black
+    pkgs.pipx
+    (pkgs.poetry.override { python3 = pkgs.python311; })  
+    # (pkgs.pipx.override { python3 = pkgs.python311; })
+ 
+    # some libraries for cltk deps (numpy, scipy)
+    pkgs.zlib
+    pkgs.gcc
+    pkgs.gnumake
   ];
 
   # https://devenv.sh/languages/
   # languages.rust.enable = true;
   languages.python.enable = true;
+  languages.python.package = pkgs.python311; # the version that currently works with CLTK
+
   languages.python.poetry.enable = true;
   languages.python.poetry.activate.enable = true;
 
@@ -42,16 +58,31 @@
     git --version
   '';
 
+  scripts.run-test-suite.exec = ''
+    $HOME/.local/bin/poe test
+  '';
+
+  scripts.jsinstall.exec = ''
+    npm install --prefix=$DEVENV_ROOT/src-web
+  '';
+
+  scripts.jsbuild.exec = ''
+    npm run build --prefix=$DEVENV_ROOT/src-web && cp -r $DEVENV_ROOT/src-web/dist/* $DEVENV_ROOT/webroot/
+  '';
+
   # https://devenv.sh/tasks/
   tasks = {
-    "langnet:setup".exec = "pipx install gunicorn poethepoet flask && ${pkgs.poetry}/bin/poetry install";
+    "langnet:setup".exec = "pipx install gunicorn poethepoet flask nose2 && ${pkgs.poetry}/bin/poetry install";
+
+    # http://localhost:5000
     "langnet:dev".exec = "devenv shell $HOME/.local/bin/poe -- dev";
+
+    # http://localhost:8000
     "langnet:serve".exec = "devenv shell $HOME/.local/bin/poe -- serve";
-    "langnet:jssetup".exec = ''devenv shell npm -- install --prefix=frontend'';
-    "langnet:jsdev".exec = ''devenv shell npm -- run dev --prefix=frontend'';
-    "langnet:jsbuild".exec = ''
-        devenv shell npm -- run build --prefix=frontend && cp -r frontend/dist/* webroot/
-    '';
+
+    # http://localhost:5173
+    "langnet:jsdev".exec = ''devenv shell npm -- run dev --prefix=$DEVENV_ROOT/src-web'';
+
     "devenv:enterShell".after = [ "langnet:setup" ];
   };
 

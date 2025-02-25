@@ -1,4 +1,4 @@
-from langnet.flask_app import create_flask_app
+from langnet.flask_app.core import create_flask_app
 
 app = create_flask_app()
 

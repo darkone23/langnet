@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, send_from_directory, current_app
+from flask import Blueprint, send_from_directory, current_app
 
 app = Blueprint("static", __name__)
 

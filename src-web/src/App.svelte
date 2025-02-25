@@ -1,5 +1,6 @@
 <script lang="ts">
 
+  import type { Route } from "@mateothegreat/svelte5-router";
   import { route, Router } from "@mateothegreat/svelte5-router";
 
   import Home from './Home.svelte';
@@ -23,7 +24,6 @@
   ];
 </script>
 
-
 <div class="flex gap-2 px-4 mt-2">
   <a use:route href="/">Home</a>
   <a use:route href="/about">About</a>
@@ -31,6 +31,6 @@
 
 <main class="flex flex-wrap items-center justify-between w-full px-4">
 
-<Router base="/" {routes} />
+<Router basePath="/" {routes} />
 
 </main>

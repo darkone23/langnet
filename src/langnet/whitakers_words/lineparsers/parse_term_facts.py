@@ -1,5 +1,4 @@
 import sys
-import json
 from lark import Lark, Transformer, Tree
 
 TERM_FACTS_GRAMMAR = """

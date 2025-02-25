@@ -1,5 +1,3 @@
-import sys
-
 from sh import Command
 from pathlib import Path
 import re

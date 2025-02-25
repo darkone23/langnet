@@ -166,7 +166,6 @@ class DiogenesScraper:
         indent_history = [0]  # indices into an n-dimensional array
 
         def shift_cursor(block: BeautifulSoup):
-            should_indent = True
             css_text = block.attrs.get("style", "")
             css_match = re.search(r"padding-left:\s*([\d.]+)", css_text)
             indent = 0
@@ -181,7 +180,6 @@ class DiogenesScraper:
             blocks.append(dict(indentid=node_id, soup=block_copy))
 
         def insert_root_node(block: BeautifulSoup):
-            main_block = soup
             node_id = "0".zfill(2)
             next_blocks = [dict(indentid=node_id, soup=block)] + blocks
             blocks.clear()
@@ -253,7 +251,7 @@ class DiogenesScraper:
             del block["indentid"]
             del block["soup"]
 
-        remaining_text = soup.get_text()
+        # remaining_text = soup.get_text()
         references["blocks"] = blocks
 
         # print(len(blocks))

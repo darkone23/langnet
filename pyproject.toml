@@ -4,10 +4,12 @@ version = "0.1.0"
 description = ""
 authors = ["Orpheus <orpheus@computerdream.club>"]
 readme = "README.md"
-packages = [{include = "langnet"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "<3.12,>=3.9" # matching cltk versions for poetry
+cltk = "^1.4.0"
+pycdsl = "^0.9.0"
 beautifulsoup4 = "^4.13.3"
 requests = "^2.32.3"
 gunicorn = "^23.0.0"
@@ -19,10 +21,18 @@ pygtrie = "^2.5.0"
 lark = "^1.2.2"
 rich = "^13.9.4"
 
+[tool.poetry.group.test.dependencies]
+nose2 = "^0.15.1"
+
+[tool.poe.env]
+PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"
+VAR2 = "BAR BAR BLACK ${FARM_ANIMAL}"
+
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
 dev.cmd = "flask --app langnet.wsgi:app run --debug"
 dev.envfile = "${POE_GIT_DIR}/.dev-envfile"
+test.cmd = "nose2 -s tests"
 
 [build-system]
 requires = ["poetry-core"]

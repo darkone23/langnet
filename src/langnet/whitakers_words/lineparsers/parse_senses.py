@@ -1,5 +1,4 @@
 import sys
-import json
 import re
 from lark import Lark, Transformer
 
