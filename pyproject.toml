@@ -23,7 +23,7 @@ rich = "^13.9.4"
 
 [tool.poetry.group.test.dependencies]
 nose2 = "^0.15.1"
-expecttest = "^0.3.0"
+# expecttest = "^0.3.0" # not currently supporting utf-8 https://github.com/pytorch/expecttest/issues/27
 
 [tool.poe.env]
 PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"

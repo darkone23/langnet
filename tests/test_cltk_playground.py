@@ -1,5 +1,4 @@
 import unittest
-from expecttest import TestCase as ExpectTestCase
 import time
 import textwrap
 
@@ -24,7 +23,7 @@ wiring = (
 )  # this will prompt downloading language data from universities
 
 
-class TestLatinExamples(ExpectTestCase):
+class TestLatinExamples(unittest.TestCase):
 
     # import basic latin corpus
 
@@ -66,10 +65,10 @@ class TestLatinExamples(ExpectTestCase):
 
         self.assertEqual(result, textwrap.dedent(somestr))
 
-        self.assertExpectedInline(somestr, """""")
+        # self.assertExpectedInline(somestr, """""")
 
 
-class TestCologneDigitalSanskritLexicon(ExpectTestCase):
+class TestCologneDigitalSanskritLexicon(unittest.TestCase):
 
     def test_basic_dictionary(self):
         results = wiring.cologne_dict.mw.search("राम")

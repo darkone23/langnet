@@ -25,10 +25,8 @@ class DiogenesChunkType:
 class DiogenesLanguages:
     GREEK = "grk"
     LATIN = "lat"
-    ENGLISH = "eng"
 
     parse_langs = set([GREEK, LATIN])
-    gdict_lang = set([ENGLISH])
 
     @staticmethod
     def greek_to_code(greek):
