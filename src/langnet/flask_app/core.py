@@ -6,21 +6,32 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from .config import FlaskAppConfig
 
 from langnet.diogenes.core import DiogenesScraper
+from langnet.whitakers_words.core import WhitakersWords
+from langnet.classics_toolkit.core import ClassicsToolkit
+from langnet.cologne.core import SanskritCologneLexicon
+
+from langnet.engine.core import LanguageEngine
 
 
 class FlaskAppWiring:
 
     config = FlaskAppConfig()
+
     scraper = DiogenesScraper()
+    whitakers = WhitakersWords()
+    cltk = ClassicsToolkit()
+    cdsl = SanskritCologneLexicon()
+
+    engine = LanguageEngine(scraper, whitakers, cltk, cdsl)
 
     def init_flask_app(self, app: Flask):
         # do plugin init app stuff here...
         app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
         from .api import app as api_blueprint
-        from .static import app as static_blueprint
+        from .svelte import app as svelte_blueprint
 
-        app.register_blueprint(static_blueprint, url_prefix="/")
         app.register_blueprint(api_blueprint, url_prefix="/api")
+        app.register_blueprint(svelte_blueprint, url_prefix="/")
 
 
 def get_wiring() -> FlaskAppWiring:

@@ -33,12 +33,13 @@ class DiogenesLanguages:
     @staticmethod
     def greek_to_code(greek):
         code = betacode.conv.uni_to_beta(greek)
-        return code.translate(str.maketrans("", "", digits))
-        # return code
+        return code.translate(
+            str.maketrans("", "", digits)
+        )  # remove digits from betacode since diogenes does better without them....
 
     @staticmethod
-    def code_to_greek():
-        return betacode.conv.beta_to_uni(greek)
+    def code_to_greek(beta):
+        return betacode.conv.beta_to_uni(beta)
 
 
 class DiogenesScraper:

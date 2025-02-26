@@ -1,31 +1,22 @@
 from flask import Blueprint
 from flask import request, jsonify
 
-from langnet.flask_app.core import get_wiring
-from langnet.diogenes.core import DiogenesLanguages
-from langnet.whitakers_words.core import WhitakersWords
+from langnet.flask_app.core import get_wiring, FlaskAppWiring
 
 app = Blueprint("api", __name__)
 
 
-@app.route("/ping")
-def ping():
-    return "pong"
-
-
 @app.route("/q")
 def q():
-    search = request.args.get("s", "Ἀσίας")
-    lang = request.args.get("l", DiogenesLanguages.GREEK)
-    print("got query:", search, lang)
+    search = request.args.get("s", None)
+    lang = request.args.get("l", None)
+
+    if search is None or lang is None:
+        return "Bad Request", 400
+
     # print(request.data)
 
-    wiring = get_wiring()
-    result = wiring.scraper.parse_word(search, lang)
-
-    response = dict(diogenes=result)
-
-    if lang == DiogenesLanguages.LATIN:
-        result["whitakers"] = WhitakersWords.words([search])
+    wiring: FlaskAppWiring = get_wiring()
+    response = wiring.engine.handle_query(lang, search)
     # print(result)
     return jsonify(response)

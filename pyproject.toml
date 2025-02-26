@@ -23,10 +23,12 @@ rich = "^13.9.4"
 
 [tool.poetry.group.test.dependencies]
 nose2 = "^0.15.1"
+expecttest = "^0.3.0"
 
 [tool.poe.env]
 PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"
 VAR2 = "BAR BAR BLACK ${FARM_ANIMAL}"
+EXPECTTEST_ACCEPT = "1"
 
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
