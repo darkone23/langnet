@@ -1,10 +1,12 @@
 import time
 
+# from packaging import version
+# import contextlib
+
 from cltk import NLP
 from cltk.dependency.tree import DependencyTree
 from cltk.languages.example_texts import get_example_text
 from cltk.languages.pipelines import GreekPipeline, LatinPipeline, SanskritPipeline
-
 
 class PipelineExample:
     """
@@ -13,6 +15,7 @@ class PipelineExample:
 
     @staticmethod
     def main():
+
         iso_to_pipeline = {
             # "akk": AkkadianPipeline,
             # "ang": OldEnglishPipeline,
@@ -27,7 +30,11 @@ class PipelineExample:
             # "got": GothicPipeline,
             "grc": GreekPipeline,
             # "hin": HindiPipeline,
-            "lat": LatinPipeline,  # this pipeline is currently quite slow
+
+            # latin pipeline broken with latest torch defaults (stanza and weights_only)
+            # https://github.com/cltk/cltk/issues/1274
+            # "lat": LatinPipeline,  # this pipeline is currently quite slow
+
             # "lzh": ChinesePipeline,
             # "non": OldNorsePipeline,
             # "pan": PanjabiPipeline,

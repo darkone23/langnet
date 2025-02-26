@@ -161,19 +161,3 @@ class CodesReducer:
         tree = CodesReducer.parser.parse(line)
         result = CodesReducer.xformer.transform(tree)
         return result
-
-
-if __name__ == "__main__":
-    input_data = sys.stdin.read().strip()
-
-    if not input_data:
-        print("⚠️ No input data received! Please check your input file.")
-        sys.exit(1)
-
-    from rich.pretty import pprint
-
-    for line in input_data.splitlines():
-        print(line)
-        result = CodesReducer.reduce(line)
-        pprint(result)
-        # print(result.pretty())

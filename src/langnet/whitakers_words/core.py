@@ -2,8 +2,6 @@ from sh import Command
 from pathlib import Path
 import re
 
-from rich.pretty import pprint
-
 from .lineparsers import FactsReducer, SensesReducer, CodesReducer
 
 
@@ -13,7 +11,7 @@ class WhitakersWordsChunker:
 
     # TODO: this is blowing up if not available
     # should be a litle nicer and just have some error state like 'dont use me'
-    
+
     ww = Command(Path.home() / ".local/bin/whitakers-words")
     term_pattern = r"^[a-z.]+(?:\.[a-z]+)*\s+[A-Z]+"
 
