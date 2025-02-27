@@ -1,0 +1,6 @@
+[submodule "deps/diogenes"]
+	path = deps/diogenes
+	url = https://github.com/darkone23/diogenes
+[submodule "deps/whitakers-words"]
+	path = deps/whitakers-words
+	url = https://github.com/darkone23/whitakers-words
