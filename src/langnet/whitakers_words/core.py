@@ -4,7 +4,21 @@ import re
 
 from .lineparsers import FactsReducer, SensesReducer, CodesReducer
 
-
+def get_whitakers_proc():
+    home = Path.home()
+    maybe_words = home / ".local/bin/whitakers-words" 
+    if maybe_words.exists():
+        print("Using local whitakers")
+        return Command(maybe_words)
+    maybe_words = Path() / "deps/whitakers-words/bin/words"
+    if maybe_words.exists():
+        print("Using relative whitakers")
+        return Command(maybe_words)
+    else:
+        print("No whitakers words found, using dummy cmd")
+        test_cmd = Command("test")
+        return test_cmd.bake("!", "-z") # test non empty str
+    
 class WhitakersWordsChunker:
 
     # https://sourceforge.net/p/wwwords/wiki/wordsdoc.htm/
@@ -12,7 +26,8 @@ class WhitakersWordsChunker:
     # TODO: this is blowing up if not available
     # should be a litle nicer and just have some error state like 'dont use me'
 
-    ww = Command(Path.home() / ".local/bin/whitakers-words")
+    ww = get_whitakers_proc()
+    # Command(Path.home() / ".local/bin/whitakers-words")
     term_pattern = r"^[a-z.]+(?:\.[a-z]+)*\s+[A-Z]+"
 
     def __init__(self, input: list[str]):

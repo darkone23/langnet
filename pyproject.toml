@@ -35,7 +35,7 @@ PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"
 
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
-dev.cmd = "flask --app langnet.wsgi:app run --debug"
+dev.cmd = "flask --app langnet.wsgi:app run --debug --host localhost --port 5050"
 dev.envfile = "${POE_GIT_DIR}/.dev-envfile"
 test.cmd = "nose2 -s tests"
 

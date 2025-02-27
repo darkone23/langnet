@@ -27,7 +27,8 @@
  
     # some libraries for cltk deps (numpy, scipy)
     pkgs.zlib
-    pkgs.libgcc
+    pkgs.gcc
+    # pkgs.libgcc
     pkgs.gnumake
   ];
 
@@ -52,6 +53,9 @@
 
   # http://localhost:5173
   processes.vite-dev.exec = "npm run dev --prefix=$DEVENV_ROOT/src-web";
+
+  # http://localhost:888 
+  processes.diogenes.exec = "cd deps/diogenes; devenv-wrapped shell ./server/diogenes-server.pl";
 
   # # http://localhost:8000
   # processes.gunicorn.exec = "$HOME/.local/bin/poe serve";

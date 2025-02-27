@@ -6,6 +6,7 @@ It requires some dependencies:
 
 1. [d.iogen.es](https://d.iogen.es/web/) server running at `http://localhost:8888`
 2. [whitakers words](https://latin-words.com) installed at `~/.local/bin/whitakers-words`
+  a. optional since this does not currently work on ARM processors
 3. [Cologne Digital Sanskrit Lexicon](https://www.sanskrit-lexicon.uni-koeln.de/) installed at `~/cdsl_data/`
 4. [CLTK](https://docs.cltk.org/en/latest/about.html) classical language models at `~/cltk_data/`
 
@@ -25,7 +26,7 @@ now you can query for some latin terms:
 
 ```sh
 # assuming you have diogenes available at localhost:8888
-curl 'localhost:5000/api/q?l=lat&s=benevolens' | jq .
+curl 'localhost:5050/api/q?l=lat&s=benevolens' | jq .
 
 # compare with diogenes output:
 #   http://localhost:8888/Perseus.cgi?do=parse&lang=lat&q=benevolens
@@ -35,7 +36,7 @@ or greek terms:
 
 ```sh
 # notice treatment of utf-8 query parameters (translated to betacode)
-curl --data-urlencode 's=οὐσία' --data-urlencode 'l=grk' --get 'http://localhost:5000/api/q' | jq .
+curl --data-urlencode 's=οὐσία' --data-urlencode 'l=grk' --get 'http://localhost:5050/api/q' | jq .
 ```
 
 or sanskrit terms:
@@ -43,7 +44,7 @@ or sanskrit terms:
 ```sh
 # supports basic transliteration 
 # https://www.ashtangayoga.info/philosophy/sanskrit-and-devanagari/transliteration-tool/#hk/devanagari/devanAgarI
-curl --data-urlencode 's=saṃskṛta' --data-urlencode 'l=san' --get 'http://localhost:5000/api/q' | jq .
+curl --data-urlencode 's=sa.msk.rta' --data-urlencode 'l=san' --get 'http://localhost:5050/api/q' | jq .
 ```
 
 ## other projects:

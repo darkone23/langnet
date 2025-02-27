@@ -11,5 +11,6 @@ devenv.local.nix
 webroot/assets
 webroot/
 
+deps/
 __pycache__
 *.pyc
