@@ -34,8 +34,16 @@ curl 'localhost:5000/api/q?l=lat&s=benevolens' | jq .
 or greek terms:
 
 ```sh
-# notice treatment of utf-8 query parameters
+# notice treatment of utf-8 query parameters (translated to betacode)
 curl --data-urlencode 's=οὐσία' --data-urlencode 'l=grk' --get 'http://localhost:5000/api/q' | jq .
+```
+
+or sanskrit terms:
+
+```sh
+# supports basic transliteration 
+# https://www.ashtangayoga.info/philosophy/sanskrit-and-devanagari/transliteration-tool/#hk/devanagari/devanAgarI
+curl --data-urlencode 's=saṃskṛta' --data-urlencode 'l=san' --get 'http://localhost:5000/api/q' | jq .
 ```
 
 ## other projects:

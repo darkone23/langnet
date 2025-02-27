@@ -9,6 +9,7 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 webroot/assets
+webroot/
 
 __pycache__
 *.pyc
