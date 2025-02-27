@@ -20,6 +20,8 @@ betacode = "^1.0"
 pygtrie = "^2.5.0"
 lark = "^1.2.2"
 rich = "^13.9.4"
+pydantic = "^2.10.6"
+indic-transliteration = "^2.3.69"
 
 [tool.poetry.group.test.dependencies]
 nose2 = "^0.15.1"
@@ -27,8 +29,8 @@ nose2 = "^0.15.1"
 
 [tool.poe.env]
 PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"
-VAR2 = "BAR BAR BLACK ${FARM_ANIMAL}"
-EXPECTTEST_ACCEPT = "1"
+# VAR2 = "BAR BAR BLACK ${FARM_ANIMAL}"
+# EXPECTTEST_ACCEPT = "1"
 
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"

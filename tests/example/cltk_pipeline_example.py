@@ -8,6 +8,7 @@ from cltk.dependency.tree import DependencyTree
 from cltk.languages.example_texts import get_example_text
 from cltk.languages.pipelines import GreekPipeline, LatinPipeline, SanskritPipeline
 
+
 class PipelineExample:
     """
     adapted from [demo pipelines notebook](https://github.com/cltk/cltk/blob/master/notebooks/Demo%20of%20Pipeline%20for%20all%20languages.ipynb)
@@ -30,11 +31,9 @@ class PipelineExample:
             # "got": GothicPipeline,
             "grc": GreekPipeline,
             # "hin": HindiPipeline,
-
             # latin pipeline broken with latest torch defaults (stanza and weights_only)
             # https://github.com/cltk/cltk/issues/1274
             # "lat": LatinPipeline,  # this pipeline is currently quite slow
-
             # "lzh": ChinesePipeline,
             # "non": OldNorsePipeline,
             # "pan": PanjabiPipeline,

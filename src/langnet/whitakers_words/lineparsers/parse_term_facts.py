@@ -177,4 +177,3 @@ class FactsReducer:
         tree = FactsReducer.parser.parse(line)
         result = FactsReducer.xformer.transform(tree)
         return result
-

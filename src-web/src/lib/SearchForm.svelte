@@ -25,7 +25,8 @@
       <label for="lang-select">Select your lang: </label>
       <select id="lang-select" name="l" required>
         <option value="lat" selected>Latin</option>
-        <option value="grk">Greek</option>
+        <option value="grc">Greek</option>
+        <option value="san">Sanskrit</option>
       </select>
     </div>
 

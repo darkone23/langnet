@@ -26,7 +26,7 @@
 
 <div class="flex gap-2 px-4 mt-4">
   <a use:route href="/">Home</a>
-  <a use:route href="/about">About me</a>
+  <a use:route href="/about">About</a>
 </div>
 
 <main class="flex flex-wrap items-center justify-between w-full px-4">

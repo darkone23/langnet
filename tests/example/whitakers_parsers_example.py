@@ -1,4 +1,3 @@
-
 import sys
 from pathlib import Path
 
@@ -7,6 +6,7 @@ from langnet.whitakers_words.lineparsers.parse_term_codes import CodesReducer
 from langnet.whitakers_words.lineparsers.parse_senses import SensesReducer
 
 test_data = Path() / "tests/data/whitakers-lines"
+
 
 def facts_reducer():
     input_data = (test_data / "term-facts.txt").read_text()
@@ -22,6 +22,7 @@ def facts_reducer():
         print(line)
         result = FactsReducer.reduce(line)
         pprint(result)
+
 
 def codes_reducer():
     input_data = (test_data / "term-codes.txt").read_text()
@@ -54,6 +55,7 @@ def senses_reducer():
         result = SensesReducer.reduce(line)
         pprint(result)
         # print(result.pretty())
+
 
 if __name__ == "__main__":
     facts_reducer()

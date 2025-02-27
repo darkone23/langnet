@@ -66,4 +66,3 @@ class SensesReducer:
         tree = SensesReducer.parser.parse(line)
         result = SensesReducer.xformer.transform(tree)
         return result
-
