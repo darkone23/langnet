@@ -1,5 +1,6 @@
 <script lang="ts">
   import axios from 'axios';
+  import SearchForm from './lib/SearchForm.svelte';
 
   let { language, search } = Object.fromEntries(
     new URLSearchParams(
@@ -12,7 +13,7 @@
 
   let actionTarget = "/api/q";
   if (import.meta.env.MODE == "development") {
-    actionTarget = "http://localhost:5000/api/q";
+    actionTarget = "http://localhost:5050/api/q";
   }
   axios.get(actionTarget, {
     params: {
@@ -34,6 +35,10 @@
 </script>
 
 <div>
+
+  <SearchForm />
+
+
   <p>
   {language}@{search}::{status}
   </p>

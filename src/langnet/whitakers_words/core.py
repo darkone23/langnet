@@ -4,9 +4,10 @@ import re
 
 from .lineparsers import FactsReducer, SensesReducer, CodesReducer
 
+
 def get_whitakers_proc():
     home = Path.home()
-    maybe_words = home / ".local/bin/whitakers-words" 
+    maybe_words = home / ".local/bin/whitakers-words"
     if maybe_words.exists():
         print("Using local whitakers")
         return Command(maybe_words)
@@ -17,8 +18,9 @@ def get_whitakers_proc():
     else:
         print("No whitakers words found, using dummy cmd")
         test_cmd = Command("test")
-        return test_cmd.bake("!", "-z") # test non empty str
-    
+        return test_cmd.bake("!", "-z")  # test non empty str
+
+
 class WhitakersWordsChunker:
 
     # https://sourceforge.net/p/wwwords/wiki/wordsdoc.htm/
