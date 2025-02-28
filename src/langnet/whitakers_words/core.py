@@ -4,6 +4,53 @@ import re
 
 from .lineparsers import FactsReducer, SensesReducer, CodesReducer
 
+from pydantic import BaseModel, Field
+
+
+class CodelineName(BaseModel):
+    notes: list[str] | None = Field(default=None)
+    names: list[str]
+
+
+class CodelineData(BaseModel):
+    notes: list[str] | None = Field(default=None)
+    age: str | None = Field(default=None)
+    source: str | None = Field(default=None)
+    freq: str | None = Field(default=None)
+    declension: str | None = Field(default=None)
+    pos_form: str | None = Field(default=None)
+    term: str
+    pos_code: str
+
+
+class WhitakerWordParts(BaseModel):
+    stem: str
+    ending: str
+
+
+class WhitakerWordData(BaseModel):
+    declension: str | None = Field(default=None)
+    case: str | None = Field(default=None)
+    number: str | None = Field(default=None)
+    gender: str | None = Field(default=None)
+    variant: str | None = Field(default=None)
+    comparison: str | None = Field(default=None)
+    term_analysis: WhitakerWordParts | None = Field(default=None)
+    term: str
+    part_of_speech: str
+
+
+class WhitakersWordsT(BaseModel):
+    unknown: list[str] | None = Field(default=None)
+    raw_lines: list[str] = Field(default=[])
+    senses: list[str] = Field(default=[])
+    terms: list[WhitakerWordData] = Field(default=[])
+    codeline: CodelineData | CodelineName | None = Field(default=None)
+
+
+class WhitakersWordsResult(BaseModel):
+    wordlist: list[WhitakersWordsT]
+
 
 def get_whitakers_proc():
     home = Path.home()
@@ -116,7 +163,7 @@ class WhitakersWordsChunker:
 class WhitakersWords:
 
     @staticmethod
-    def words(search: list[str]):
+    def words(search: list[str]) -> WhitakersWordsResult:
         words_chunker = WhitakersWordsChunker(search)
         chunks = words_chunker.get_word_chunks()
         wordlist = []
@@ -165,4 +212,4 @@ class WhitakersWords:
                 del word["unknown"]
             if len(lines):
                 wordlist.append(word)
-        return wordlist
+        return WhitakersWordsResult(wordlist=wordlist)

@@ -14,6 +14,7 @@ start: noun_line
 	  | tack_line
 	  | interj_line
 	  | num_line
+	  | card_line
 	  | suffix_line
 	  | prefix_line
 	  | supine_line
@@ -24,6 +25,7 @@ adjective_line: term "ADJ" declension variant case number gender comparison [not
 verb_line: term "V" conjugation variant tense voice [mood] person number [notes]
 verb_participle_line: term "VPAR" conjugation variant case number gender tense [voice] "PPL" [notes]
 num_line: term "NUM" declension variant case number gender "ORD" [notes]
+card_line: term "NUM" declension variant case number gender "CARD" [notes]
 supine_line: term "SUPINE" declension variant case number gender [notes]
 adverb_line: term "ADV" comparison [notes]
 preposition_line: term "PREP" case [notes]
@@ -157,6 +159,9 @@ class FactsTransformer(Transformer):
 
     def num_line(self, args):
         return self.__assemble_args(args, "numerator")
+
+    def card_line(self, args):
+        return self.__assemble_args(args, "cardinal")
 
     def suffix_line(self, args):
         return self.__assemble_args(args, "suffix")

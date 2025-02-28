@@ -8,6 +8,14 @@ import cltk.lemmatize.lat as cltk_latlem
 
 from cltk.languages.utils import get_lang, Language
 
+from pydantic import BaseModel, Field
+
+
+class LatinQueryResult(BaseModel):
+    headword: str
+    ipa: str
+    lewis1890: str
+
 
 class ClassicsToolkit:
 
@@ -33,3 +41,25 @@ class ClassicsToolkit:
         self.jvsub = cltk_latchars.JVReplacer()
         self.latxform = cltk_latscript.Transcriber("Classical", "Allen")
         self.latlemma = cltk_latlem.LatinBackoffLemmatizer()
+
+    def latin_query(self, word) -> LatinQueryResult:
+        (query, stem) = self.latlemma.lemmatize([word])[0]
+        results = self.latdict.lookup(
+            # always better to look up a headword in the dictionary
+            word
+        )  # Charlton T. Lewis's *An Elementary Latin Dic
+        transcription = ""
+        try:
+            transcription = self.latxform.transcribe(word)
+        except Exception as e:
+            print(e)
+        if not results:
+            results = self.latdict.lookup(stem)
+        if not transcription:
+            try:
+                transcription = self.latxform.transcribe(stem)
+            except Exception as e:
+                print(e)
+        if transcription:
+            transcription = transcription[1:-1]
+        return LatinQueryResult(headword=stem, ipa=transcription, lewis1890=results)

@@ -8,6 +8,76 @@ import betacode.conv
 
 from collections import defaultdict
 
+from pydantic import BaseModel, Field
+
+from typing import Any
+
+DiogenesChunkT = BaseModel
+
+
+class NoMatchFoundHeader(DiogenesChunkT):
+    chunk_type: str = Field(default="NoMatchFoundHeader")
+    logeion: str
+
+
+class PerseusMorphTerm(BaseModel):
+    defs: list[str] | None = Field(default=None)
+    stem: list[str]
+    tags: list[str]
+
+
+class PerseusMorphology(BaseModel):
+    warning: str | None = Field(default=None)
+    morphs: list[PerseusMorphTerm]
+
+
+class PerseusAnalysisHeader(DiogenesChunkT):
+    chunk_type: str = Field(default="NoMatchFoundHeader")
+    logeion: str
+    morphology: PerseusMorphology
+
+
+class DiogenesDefinitionBlock(BaseModel):
+    senses: list[str] | None = Field(default=None)
+    citations: dict[str, str] | None = Field(default=None)
+    heading: str | None = Field(default=None)
+    diogenes_warning: str | None = Field(default=None)
+    entry: str
+    entryid: str
+
+
+class DiogenesDefinitionEntry(BaseModel):
+    blocks: list[DiogenesDefinitionBlock]
+    term: str
+
+
+class DiogenesFuzzyReference(DiogenesChunkT):
+    chunk_type: str = Field(default="DiogenesFuzzyReference")
+    reference_id: str
+    definitions: DiogenesDefinitionEntry
+
+
+class UnknownChunkType(DiogenesChunkT):
+    chunk_type: str = Field(default="UnknownChunkType")
+    soup: str
+
+
+class DiogenesMatchingReference(DiogenesChunkT):
+    chunk_type: str = Field(default="DiogenesMatchingReference")
+    reference_id: str
+    definitions: DiogenesDefinitionEntry
+
+
+class DiogenesResultT(BaseModel):
+    chunks: list[
+        PerseusAnalysisHeader
+        | NoMatchFoundHeader
+        | DiogenesMatchingReference
+        | DiogenesFuzzyReference
+        | UnknownChunkType
+    ]
+    dg_parsed: bool
+
 
 class DiogenesChunkType:
 
@@ -274,9 +344,22 @@ class DiogenesScraper:
         else:
             pass
 
+        # print("its chunkin time", chunk)
+        # result["chunks"].append(chunk)
+        # return
         del chunk["soup"]  # remove the html soup from the chunk artifact
 
-        result["chunks"].append(chunk)
+        if chunk_type == DiogenesChunkType.PerseusAnalysisHeader:
+            result["chunks"].append(PerseusAnalysisHeader(**chunk))
+        elif chunk_type == DiogenesChunkType.NoMatchFoundHeader:
+            result["chunks"].append(NoMatchFoundHeader(**chunk))
+        elif chunk_type == DiogenesChunkType.DiogenesMatchingReference:
+            result["chunks"].append(DiogenesMatchingReference(**chunk))
+        elif chunk_type == DiogenesChunkType.DiogenesFuzzyReference:
+            result["chunks"].append(DiogenesFuzzyReference(**chunk))
+        else:
+            soup = str(soup)
+            result["chunks"].append(UnknownChunkType(**dict(soup=soup)))
 
     def get_next_chunk(self, result, soup: BeautifulSoup):
 
@@ -333,15 +416,17 @@ class DiogenesScraper:
 
         return chunk
 
-    def parse_word(self, word, language: str = DiogenesLanguages.LATIN):
+    def parse_word(
+        self, word, language: str = DiogenesLanguages.LATIN
+    ) -> DiogenesResultT:
 
         assert (
             language in DiogenesLanguages.parse_langs
         ), f"Cannot parse unsupported diogenes language: [{language}]"
 
-        if language == DiogenesLanguages.GREEK:
-            # todo - maybe we got a code? unlikely
-            word = DiogenesLanguages.greek_to_code(word)
+        # if language == DiogenesLanguages.GREEK:
+        #     # todo - maybe we got a code? unlikely
+        #     word = DiogenesLanguages.greek_to_code(word)
 
         response = requests.get(self.__diogenes_parse_url(word, language))
 
@@ -361,4 +446,4 @@ class DiogenesScraper:
 
         # print(result)
 
-        return result
+        return DiogenesResultT(**result)

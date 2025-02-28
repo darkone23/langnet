@@ -79,9 +79,11 @@ class GrammarAbbreviations:
         "pers": "person.",
         "personif": "personified",
         "philosoph": "philosophy, philosophical .",
+        "perh": "perhaps.",
         "phr": "phrase.",
         "p": "plural.",
         "pl": "plural.",
+        # "pp": "past-participle.",
         "posit": "positive.",
         "pos": "positive.",
         "prep": "preposition.",
@@ -125,20 +127,22 @@ class LanguageEngine:
 
         if lang == LangnetLanguageCodes.Greek:
             result = dict(
-                diogenes=self.diogenes.parse_word(word, DiogenesLanguages.GREEK)
+                diogenes=self.diogenes.parse_word(
+                    word, DiogenesLanguages.GREEK
+                ).model_dump(exclude_none=True)
             )
         elif lang == LangnetLanguageCodes.Latin:
+            tokenized = [word]
             result = dict(
-                diogenes=self.diogenes.parse_word(word, DiogenesLanguages.LATIN),
-                whitakers=self.whitakers.words([word]),
-                lewis1890=self.cltk.latdict.lookup(
-                    # always better to look up a headword in the dictionary
-                    word
-                ),  # Charlton T. Lewis's *An Elementary Latin Dic
+                diogenes=self.diogenes.parse_word(
+                    word, DiogenesLanguages.LATIN
+                ).model_dump(exclude_none=True),
+                whitakers=self.whitakers.words(tokenized).model_dump(exclude_none=True),
+                cltk=self.cltk.latin_query(word).model_dump(exclude_none=True),
             )
         elif lang == LangnetLanguageCodes.Sanskrit:
             # TODO: add basic sanskrit lexicon support via CDSL
-            result = self.cdsl.lookup_ascii(word)
+            result = self.cdsl.lookup_ascii(word).model_dump(exclude_none=True)
         else:
             raise NotImplementedError(f"Do not know how to handle {lang}")
 

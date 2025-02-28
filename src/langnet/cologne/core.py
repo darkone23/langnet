@@ -5,8 +5,33 @@ from indic_transliteration.sanscript import SchemeMap, SCHEMES, transliterate
 from indic_transliteration.detect import detect
 
 
+from pydantic import BaseModel, Field
+
+
+class SanskritDictionaryEntry(BaseModel):
+    subid: str | None = Field(default=None)
+    id: str
+    meaning: str
+
+
+class SanskritDictionaryLookup(BaseModel):
+    term: str
+    iast: str
+    hk: str
+    entries: list[SanskritDictionaryEntry]
+
+
+class CologneSanskritQueryResult(BaseModel):
+    mw: list[SanskritDictionaryLookup]
+    ap90: list[SanskritDictionaryLookup]
+
+
 class SanskritCologneLexicon:
     def __init__(self):
+
+        # TODO:
+        # this blows up if you don't have an internet connection or cologne is not online...
+
         self.CDSL: pycdsl.CDSLCorpus = pycdsl.CDSLCorpus()
         self.CDSL.setup()
 
@@ -35,7 +60,7 @@ class SanskritCologneLexicon:
     def serialize_results(self, results: list[pycdsl.lexicon.Entry]):
         # need to group results by ID
         # rule: if lexicon id contains a dot group on LHS
-        return [
+        xs = [
             dict(
                 id=result.id,
                 key=result.key,
@@ -44,10 +69,42 @@ class SanskritCologneLexicon:
             )
             for result in results
         ]
+        # xs.sort()
+        xs = sorted(xs, key=lambda x: x["key"])
+        results = dict()
+        for x in xs:
+            k = x["key"]
+            existing = results.get(k, [])
+            id = str(x["id"])
+            subid = None
+            id_parts = id.split(".")
+            parts_len = len(id_parts)
+            if parts_len == 1:
+                pass
+            elif parts_len == 2:
+                id = id_parts[0]
+                subid = id_parts[1]
+            else:
+                print("Unexpected CDSL id length:", x)
+            del x["key"]
+            x["id"] = id
+            x["subid"] = subid
+            existing.append(x)
+            results[k] = existing
+        result_xs = []
+        for k, vs in results.items():
+            r = dict(
+                term=k,
+                iast=transliterate(k, sanscript.DEVANAGARI, sanscript.IAST),
+                hk=transliterate(k, sanscript.DEVANAGARI, sanscript.HK),
+                entries=vs,
+            )
+            result_xs.append(r)
+        return result_xs
 
-    def lookup_ascii(self, data):
+    def lookup_ascii(self, data) -> CologneSanskritQueryResult:
         devengari = self.transliterate(data)
-        return dict(
+        return CologneSanskritQueryResult(
             mw=self.serialize_results(self.mw.search(devengari)),
             ap90=self.serialize_results(self.ap90.search(devengari)),
         )
