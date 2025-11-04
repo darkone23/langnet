@@ -1,0 +1,3 @@
+- replace pydantic with dataclass/cattrs
+- update svelte or move to htmx
+  - manually patched svelte5-router crypto.randomUUID

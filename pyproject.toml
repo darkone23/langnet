@@ -35,9 +35,11 @@ PYTHONPATH = "${POE_ROOT}/src:${PYTHONPATH}"
 
 [tool.poe.tasks]
 serve = "gunicorn --chdir=. --access-logfile=- --error-logfile=- -w1 langnet.wsgi:app"
-dev.cmd = "flask --app langnet.wsgi:app run --debug --host localhost --port 5050"
+dev.cmd = "flask --app langnet.wsgi:app run --debug --host 0.0.0.0 --port 5050"
 dev.envfile = "${POE_GIT_DIR}/.dev-envfile"
 test.cmd = "nose2 -s tests"
+shell = "python3"
+sidecar = "python3 -m langnet.diogenes.cli_util"
 
 [build-system]
 requires = ["poetry-core"]

@@ -28,9 +28,11 @@ class FlaskAppWiring:
         # do plugin init app stuff here...
         app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
         from .bp.api import app as api_blueprint
+        from .bp.htmx import app as htmx_blueprint
         from .bp.svelte import app as svelte_blueprint
 
         app.register_blueprint(api_blueprint, url_prefix="/api")
+        app.register_blueprint(htmx_blueprint, url_prefix="/htmx")
         app.register_blueprint(svelte_blueprint, url_prefix="/")
 
 

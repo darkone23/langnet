@@ -10,11 +10,13 @@ from cltk.languages.utils import get_lang, Language
 
 from pydantic import BaseModel, Field
 
+from typing import List
+
 
 class LatinQueryResult(BaseModel):
     headword: str
     ipa: str
-    lewis1890: str
+    lewis_1890_lines: List[str]
 
 
 class ClassicsToolkit:
@@ -62,4 +64,8 @@ class ClassicsToolkit:
                 print(e)
         if transcription:
             transcription = transcription[1:-1]
-        return LatinQueryResult(headword=stem, ipa=transcription, lewis1890=results)
+        return LatinQueryResult(
+            headword=stem,
+            ipa=transcription,
+            lewis_1890_lines=results.splitlines(keepends=False),
+        )

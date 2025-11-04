@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "@mateothegreat/svelte5-router";  
+
   function handleFormSubmit(event: SubmitEvent) {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -11,9 +12,8 @@
         language: "" + formData["l"],
         search: "" + formData["s"]
       }
-      // console.log('here are your params', params)
-
-      goto("/q", params)    
+      console.log('here are your params', params)
+      goto("/q", params, function() { console.log('am I called?') })
     } else {
       console.warn("Unexpected event target", event.target)
     }
@@ -21,7 +21,7 @@
   }
 
   import { get } from 'svelte/store'
-  import { storable } from './storable.js'
+  import { storable } from './storable'
 
 	const store = storable({
     term: '',
@@ -32,6 +32,7 @@
   let langvalue = get(store)["checked"];
 
   function handleSearchChange() {
+    console.log("the search changed!")
     store.update(function(data: any) {
       data["term"] = value;
       return data

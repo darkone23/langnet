@@ -2,6 +2,8 @@
   import axios from 'axios';
   import SearchForm from './lib/SearchForm.svelte';
 
+  console.log('you are loading searchform page')
+
   let { language, search } = Object.fromEntries(
     new URLSearchParams(
       window.location.search
@@ -38,10 +40,9 @@
 
   <SearchForm />
 
-
   <p>
   {language}@{search}::{status}
   </p>
   <hr />
-  <pre>{JSON.stringify(result, 0, 2)}
+  <pre>{JSON.stringify(result, null, 2)}</pre>
 </div>

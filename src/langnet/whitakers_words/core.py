@@ -5,6 +5,7 @@ import re
 from .lineparsers import FactsReducer, SensesReducer, CodesReducer
 
 from pydantic import BaseModel, Field
+from rich.pretty import pprint
 
 
 class CodelineName(BaseModel):
@@ -13,14 +14,14 @@ class CodelineName(BaseModel):
 
 
 class CodelineData(BaseModel):
+    term: str
     notes: list[str] | None = Field(default=None)
     age: str | None = Field(default=None)
     source: str | None = Field(default=None)
     freq: str | None = Field(default=None)
     declension: str | None = Field(default=None)
     pos_form: str | None = Field(default=None)
-    term: str
-    pos_code: str
+    pos_code: str | None = Field(default=None)
 
 
 class WhitakerWordParts(BaseModel):
@@ -66,6 +67,28 @@ def get_whitakers_proc():
         print("No whitakers words found, using dummy cmd")
         test_cmd = Command("test")
         return test_cmd.bake("!", "-z")  # test non empty str
+
+
+# def fixlines(lines):
+#     fixed_lines = []
+#     for line in lines:
+#         if line.startswith(" "):
+#             fixed_lines[len(fixed_lines) - 1] += line
+#         else:
+#             fixed_lines.append(line)
+#     return fixed_lines
+def fixup(wordlist):
+    fixed_words = []
+    for word in wordlist:
+        codeline = word.get("codeline", None)
+        if codeline is not None:
+            maybe_term = codeline.get("term", None)
+            if maybe_term is None:
+                codeline["term"] = word["terms"][0]["term"]
+                word["codeline"] = codeline
+        fixed_words.append(word)
+    pprint(fixed_words)
+    return fixed_words
 
 
 class WhitakersWordsChunker:
@@ -151,6 +174,7 @@ class WhitakersWordsChunker:
         for line in self.result.splitlines():
             line_info = self.classify_line(line)
             next_word = self.get_next_word(current_word, last_line, line_info)
+            # print(f"I think the next word is: {next_word}")
             last_line = line_info
             if next_word is not current_word:
                 current_word = next_word
@@ -212,4 +236,4 @@ class WhitakersWords:
                 del word["unknown"]
             if len(lines):
                 wordlist.append(word)
-        return WhitakersWordsResult(wordlist=wordlist)
+        return WhitakersWordsResult(wordlist=fixup(wordlist))
